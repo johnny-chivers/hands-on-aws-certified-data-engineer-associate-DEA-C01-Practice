@@ -177,7 +177,7 @@ Below are the schemas for the tables that wil be created in the Glue Data Catalo
 
 ## Set Up 
 1. We will use three data sets uploaded in the main setup section
-2. Athena will need a location to store results in S3. We Will use the `athena` folder created in the initial setup. 
+2. Run the athena.yaml script in Cloudformation. Athena will need a location to store results in S3. We Will use the `athena` folder created in the initial setup which we will enter as a results location when running the Cloudformation script. 
 3. We will create a new databse in the Athena Query editor to use. 
 ```
 CREATE DATABASE demo_data; 
