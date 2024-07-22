@@ -1,0 +1,18 @@
+employeeid,managerid,firstname,lastname,fullname,jobtitle,organizationlevel,maritalstatus,gender,territory,country,group 
+274,,Stephen,Jiang,Stephen Jiang,North American Sales Manager,2,M,M,,,
+275,274,Michael,Blythe,Michael Blythe,Sales Representative,3,S,M,Northeast,US,North America
+276,274,Linda,Mitchell,Linda Mitchell,Sales Representative,3,M,F,Southwest,US,North America
+277,274,Jillian,Carson,Jillian Carson,Sales Representative,3,S,F,Central,US,North America
+278,274,Garrett,Vargas,Garrett Vargas,Sales Representative,3,M,M,Canada,CA,North America
+279,274,Tsvi,Reiter,Tsvi Reiter,Sales Representative,3,M,M,Southeast,US,North America
+280,274,Pamela,Ansman-Wolfe,Pamela Ansman-Wolfe,Sales Representative,3,S,F,Northwest,US,North America
+281,274,Shu,Ito,Shu Ito,Sales Representative,3,M,M,Southwest,US,North America
+282,274,Josh,Saraiva,Josh Saraiva,Sales Representative,3,M,M,Canada,CA,North America
+283,274,David,Campbell,David Campbell,Sales Representative,3,S,M,Northwest,US,North America
+284,274,Tete,Mensa-Annan,Tete Mensa-Annan,Sales Representative,3,M,M,Northwest,US,North America
+285,,Syed,Abbas,Syed Abbas,Pacific Sales Manager,2,M,M,,,
+286,285,Lynn,Tsoflias,Lynn Tsoflias,Sales Representative,3,S,F,Australia,AU,Pacific
+287,,Amy,Alberts,Amy Alberts,European Sales Manager,2,M,F,,,
+288,287,Rachel,Valdez,Rachel Valdez,Sales Representative,3,S,F,Germany,DE,Europe
+289,287,Jae,Pak,Jae Pak,Sales Representative,3,M,F,United Kingdom,GB,Europe
+290,287,Ranjit,Varkey Chudukatil,Ranjit Varkey Chudukatil,Sales Representative,3,S,M,France,FR,Europe

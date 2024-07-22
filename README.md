@@ -49,6 +49,15 @@ AWS Glue is a serverless data integration service that makes it easier to discov
 
 In this section we will learn how to register data in the [Glue Data Catalog](#AWS-Glue-Data-Catalog) so we can perform ETL on the raw data that we uploaded in the [set up section](#setup). We will use Glue Visual ETL editor to create an script which will be executed on demand, and via a schedule, from the AWS Glue console. 
 
+## Setup for AWS Glue Tutorial 
+For the following Glue Tutorial and accompanying youtube video we will complete the following setup work. 
+
+1. Run the glue.yaml file in cloudformation 
+2. Upload the employees_headers/employees.csv to the `rawData' folder in the S3 Bucket 
+3. Upload the orders_headers/orders.csv to the `rawData' folder in the S3 Bucket 
+
+The Cloudformation script will create a Glue Service rule required throughout the glue tutorial. The headers folders/csv is required for the AWS Glue Crawler. These files contain headers in the first row, unlike the data we unload as part of the initial setup work. The AWS Glue Crawler will infer headers from these files. 
+
 ## Data
 Below is the schema for the table that wil be created in the Glue Data Catalog which includes a sample of the data.
 
@@ -59,26 +68,96 @@ Below is the schema for the table that wil be created in the Glue Data Catalog w
 |  295 | Kim                      | Abercrombie            | Kim Abercrombie                |
 |  297 | Humberto                 | Acevedo                | Humberto Acevedo               |
 
+**Orders**
+
+|  SalesOrderID |  SalesOrderDetailID |  OrderDate |  DueDate  | ShipDate | EmployeeID | CustomerID | SubTotal | TaxAmt | Freight | TotalDue | ProductID | OrderQty | UnitPrice | UnitPriceDiscount | LineTotal |
+|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|
+| 71782 | 110667 | 5/1/2014   | 5/13/2014  | 5/8/2014  | 276 |  293 |   33319.986 |  3182.8264 |  994.6333 | 37497.4457 | 714 |  3 |    29.994 |    0 |      89.982 |
+| 44110 |   1732 | 8/1/2011   | 8/13/2011  | 8/8/2011  | 277 |  295 |  16667.3077 |  1600.6864 |  500.2145 |  18768.2086 | 765 |  2 |  419.4589 |    0 |    838.9178 |
+| 44131 |   2005 | 8/1/2011   | 8/13/2011  | 8/8/2011  | 275 |  297 |  20514.2859 |  1966.5222 |  614.5382 |  23095.3463 | 709 |  6 |       5.7 |    0 |        34.2 |
+
+**Employees**
+
+| EmployeeID | ManagerID | FirstName | LastName | FullName  | JobTitle | OrganizationLevel | MaritalStatus  | Gender | Territory | Country | Group |      
+|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|
+| 276 |  274 | Linda   | Mitchell          | Linda Mitchell           | Sales Representative         | 3 | M | F | Southwest      | US   | North America |
+| 277 |  274 | Jillian | Carson            | Jillian Carson           | Sales Representative         | 3 | S | F | Central        | US   | North America |
+| 275 |  274 | Michael | Blythe            | Michael Blythe           | Sales Representative         | 3 | S | M | Northeast      | US   | North America |
+
+
 ## AWS Glue Data Catalog 
 
 The AWS Glue Data Catalog is your persistent technical metadata store. It is a managed service that you can use to store, annotate, and share metadata in the AWS Cloud.
 
 In this section we will catalog the data we uplaoded to S3 during the setup stage. 
 
-The accompanying youtube video details what the Glue Data Catalog is. 
+## Glue Data Catalog Databases 
+An AWS Glue Database is a set of associated Data Catlog table definitions organized into a logical group. An AWS Glue database can contain many tables, and each table must be associated with a single database.
 
-## Glue Crawler 
+In the youtube video we will create two databases
+1. `raw_data`
+2. `processed_data`
+
+## Glue Data Catalog Tables 
+AWS Glue Tables are the metadata definition that represents data. The data resides in its orginal store. This is just a representation of the schema. Tables can be added manually through the AWS Console and/or the AWS Glue Crawler. 
+
+In the youtube video we will manually create the customers table before using an AWS Crawler to setup the remaining table. 
+
+Below is the schema for the customer table. 
+```
+    customerid  INT
+    firstname   STRING
+    lastname    STRING
+    fullname    STRING
+```
+
+## AWS Glue Crawler 
 You can use an AWS Glue crawler to populate the AWS Glue Data Catalog with databases and tables. This is the primary method used by most AWS Glue users. A crawler can crawl multiple data stores in a single run. Upon completion, the crawler creates or updates one or more tables in your Data Catalog. Extract, transform, and load (ETL) jobs that you define in AWS Glue use these Data Catalog tables as sources and targets. The ETL job reads from and writes to the data stores that are specified in the source and target Data Catalog tables.
 
 The accompanying youtube video details how this can be done. 
 
-## Adding Databases and Tables Manually Through The AWS Console
+Below is the schema for the employees table. 
+```
+    employeeid        INT
+    managerid         INT
+    firstname         STRING
+    lastname          STRING
+    fullname          STRING
+    jobtitle          STRING   
+    organizationlevel INT
+    maritalstatus     STRING 
+    gender            STRING
+    territory         STRING
+    country           STRING
+    group             STRING
+```
 
-The accompanying youtube video details how databases and tables can be manually added to the AWS Glue Data Catalog. 
+Below is the schema for the orders table. 
+```
+salesorderid        INT
+salesorderdetailid  INT
+orderdate           STRING
+duedate             STRING
+shipdate            STRING
+employeeid          INT 
+customerid          INT 
+subtotal            DOUBLE
+taxamt              DOUBLE
+freight             DOUBLE
+totaldue            DOUBLE
+productid           INT
+orderqty            INT
+unitprice           DOUBLE
+unitpricediscount   DOUBLE
+linetotal           DOUBLE
+``` 
 
 ## AWS Glue Connections
 
 A Data Catalog object that contains the properties that are required to connect to a particular data store. Glue Connections can be used to connect to RDS, Redshift, S3, and other datastores. The connections can be used repeatedly throughout ETL code to avoid hard coding connection string details into scripts. 
+
+## Partitions in AWS 
+Partitions are folders where data is stored in S3, which are physical entities are mapped to partitions, which are logical entities i.e. Columns in the Glue Table. 
 
 ## AWS Glue ETL 
 An AWS Glue job encapsulates a script that connects to your source data, processes it, and then writes it out to your data target. Typically, a job runs extract, transform, and load (ETL) scripts. Jobs can run scripts designed for Apache Spark and Ray runtime environments. Jobs can also run general-purpose Python scripts (Python shell jobs.) AWS Glue triggers can start jobs based on a schedule or event, or on demand. You can monitor job runs to understand runtime metrics such as completion status, duration, and start time.
