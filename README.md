@@ -47,7 +47,7 @@ The S3 bucket should have the follow structure once set up;
 
 AWS Glue is a serverless data integration service that makes it easier to discover, prepare, and combine data for analytics, machine learning (ML), and application development. AWS Glue provides all the capabilities needed for data integration, so you can start analyzing your data and putting it to use in minutes instead of months. AWS Glue provides both visual and code-based interfaces to make data integration easier. Users can more easily find and access data using the AWS Glue Data Catalog. Data engineers and ETL (extract, transform, and load) developers can visually create, run, and monitor ETL workflows in a few steps in AWS Glue Studio. Data analysts and data scientists can use AWS Glue DataBrew to visually enrich, clean, and normalize data without writing code.
 
-In this section we will learn how to register data in the [Glue Data Catalog](#AWS-Glue-Data-Catalog) so we can perform ETL on the raw data that we uploaded in the [set up section](#setup). We will use Glue Visual ETL editor to create an script which will be executed on demand, and via a schedule, from the AWS Glue console. 
+In this section we will learn how to register data in theGlue Data Catalog so we can perform ETL on data We will use Glue Visual ETL editor to create an script which will be executed on demand, and via a schedule, from the AWS Glue console. 
 
 ## Setup for AWS Glue Tutorial 
 For the following Glue Tutorial and accompanying youtube video we will complete the following setup work. 
@@ -56,7 +56,7 @@ For the following Glue Tutorial and accompanying youtube video we will complete 
 2. Upload the employees_headers/employees.csv to the `rawData' folder in the S3 Bucket 
 3. Upload the orders_headers/orders.csv to the `rawData' folder in the S3 Bucket 
 
-The Cloudformation script will create a Glue Service rule required throughout the glue tutorial. The headers folders/csv is required for the AWS Glue Crawler. These files contain headers in the first row, unlike the data we unload as part of the initial setup work. The AWS Glue Crawler will infer headers from these files. 
+The Cloudformation script will create a Glue Service role required throughout the glue tutorial. The headers folders/csv is required for the AWS Glue Crawler. These files contain headers in the first row, unlike the data we unload as part of the initial setup work. The AWS Glue Crawler will infer headers from these files. 
 
 ## Data
 Below is the schema for the table that wil be created in the Glue Data Catalog which includes a sample of the data.
