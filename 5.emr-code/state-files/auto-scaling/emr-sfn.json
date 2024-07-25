@@ -1,0 +1,164 @@
+{
+    "Comment": "State machine to invoke multiple EMR jobs",
+    "StartAt": "Parallel",
+    "States": {
+        "Parallel": {
+            "Type": "Parallel",
+            "Next": "Terminate Cluster?",
+            "Branches": [
+                {
+                    "StartAt": "Add Spark Steps",
+                    "States": {
+                        "Add Spark Steps": {
+                            "Type": "Map",
+                            "Iterator": {
+                                "StartAt": "Add Spark Step To EMR Cluster",
+                                "States": {
+                                    "Add Spark Step To EMR Cluster": {
+                                        "Type": "Task",
+                                        "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+                                        "Parameters": {
+                                            "ClusterId.$": "$.clusterId",
+                                            "Step": {
+                                                "Name": "SparkJob",
+                                                "HadoopJarStep": {
+                                                    "Jar": "command-runner.jar",
+                                                    "Args.$": "$.sparkArgs"
+                                                }
+                                            }
+                                        },
+                                        "ResultPath": "$.sparkResult",
+                                        "End": true
+                                    }
+                                }
+                            },
+                            "ItemsPath": "$.sparkArgs",
+                            "Parameters": {
+                                "sparkArgs.$": "$$.Map.Item.Value",
+                                "clusterId.$": "$.clusterId"
+                            },
+                            "ResultPath": null,
+                            "End": true
+                        }
+                    }
+                },
+                {
+                    "StartAt": "Wait - Hive",
+                    "States": {
+                        "Wait - Hive": {
+                            "Type": "Wait",
+                            "Seconds": 60,
+                            "Next": "Add Hive Steps"
+                        },
+                        "Add Hive Steps": {
+                            "Type": "Map",
+                            "Iterator": {
+                                "StartAt": "Add Hive Step To EMR Cluster",
+                                "States": {
+                                    "Add Hive Step To EMR Cluster": {
+                                        "Type": "Task",
+                                        "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+                                        "Parameters": {
+                                            "ClusterId.$": "$.clusterId",
+                                            "Step": {
+                                                "Name": "HiveJob",
+                                                "HadoopJarStep": {
+                                                    "Jar": "command-runner.jar",
+                                                    "Args.$": "$.hiveArgs"
+                                                }
+                                            }
+                                        },
+                                        "ResultPath": "$.hiveResult",
+                                        "End": true
+                                    }
+                                }
+                            },
+                            "ItemsPath": "$.hiveArgs",
+                            "Parameters": {
+                                "hiveArgs.$": "$$.Map.Item.Value",
+                                "clusterId.$": "$.clusterId"
+                            },
+                            "End": true,
+                            "ResultPath": null
+                        }
+                    }
+                },
+                {
+                    "StartAt": "Wait - Pig",
+                    "States": {
+                        "Wait - Pig": {
+                            "Type": "Wait",
+                            "Seconds": 120,
+                            "Next": "Add Pig Steps"
+                        },
+                        "Add Pig Steps": {
+                            "Type": "Map",
+                            "Iterator": {
+                                "StartAt": "Add Pig Step To EMR Cluster",
+                                "States": {
+                                    "Add Pig Step To EMR Cluster": {
+                                        "Type": "Task",
+                                        "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+                                        "Parameters": {
+                                            "ClusterId.$": "$.clusterId",
+                                            "Step": {
+                                                "Name": "PigJob",
+                                                "HadoopJarStep": {
+                                                    "Jar": "command-runner.jar",
+                                                    "Args.$": "$.pigArgs"
+                                                }
+                                            }
+                                        },
+                                        "ResultPath": "$.pigResult",
+                                        "End": true
+                                    }
+                                }
+                            },
+                            "End": true,
+                            "ItemsPath": "$.pigArgs",
+                            "Parameters": {
+                                "pigArgs.$": "$$.Map.Item.Value",
+                                "clusterId.$": "$.clusterId"
+                            },
+                            "ResultPath": null
+                        }
+                    }
+                }
+            ],
+            "ResultPath": null
+        },
+        "Terminate Cluster?": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.deleteCluster",
+                    "BooleanEquals": true,
+                    "Next": "Disable Termination Protection"
+                }
+            ],
+            "Default": "Wrap Up"
+        },
+        "Disable Termination Protection": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::elasticmapreduce:setClusterTerminationProtection",
+            "Parameters": {
+                "ClusterId.$": "$.clusterId",
+                "TerminationProtected": false
+            },
+            "ResultPath": null,
+            "Next": "Terminate EMR cluster"
+        },
+        "Terminate EMR cluster": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::elasticmapreduce:terminateCluster.sync",
+            "Parameters": {
+                "ClusterId.$": "$.clusterId"
+            },
+            "Next": "Wrap Up"
+        },
+        "Wrap Up": {
+            "Type": "Pass",
+            "End": true
+        }
+    }
+}

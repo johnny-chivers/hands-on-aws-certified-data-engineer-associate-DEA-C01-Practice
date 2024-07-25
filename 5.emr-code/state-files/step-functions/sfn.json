@@ -1,0 +1,87 @@
+{
+  "Comment": "A Hello World example of the Amazon States Language using Pass states",
+  "StartAt": "Add Spark Step To EMR Cluster",
+  "States": {
+    "Add Spark Step To EMR Cluster": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+      "Parameters": {
+        "ClusterId.$": "$.clusterId",
+        "Step": {
+          "Name": "SparkJob",
+          "HadoopJarStep": {
+            "Jar": "command-runner.jar",
+            "Args.$": "$.sparkArgs"
+          }
+        }
+      },
+      "ResultPath": "$.sparkResult",
+      "Next": "Add Hive Step To EMR Cluster"
+    },
+    "Add Hive Step To EMR Cluster": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+      "Parameters": {
+        "ClusterId.$": "$.clusterId",
+        "Step": {
+          "Name": "HiveJob",
+          "HadoopJarStep": {
+            "Jar": "command-runner.jar",
+            "Args.$": "$.hiveArgs"
+          }
+        }
+      },
+      "ResultPath": "$.hiveResult",
+      "Next": "Add Pig Step To EMR Cluster"
+    },
+    "Add Pig Step To EMR Cluster": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+      "Parameters": {
+        "ClusterId.$": "$.clusterId",
+        "Step": {
+          "Name": "PigJob",
+          "HadoopJarStep": {
+            "Jar": "command-runner.jar",
+            "Args.$": "$.pigArgs"
+          }
+        }
+      },
+      "ResultPath": "$.pigResult",
+      "Next": "Terminate Cluster?"
+    },
+    "Terminate Cluster?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.deleteCluster",
+          "BooleanEquals": true,
+          "Next": "Disable Termination Protection"
+        }
+      ],
+      "Default": "Wrap Up"
+    },
+    "Disable Termination Protection": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::elasticmapreduce:setClusterTerminationProtection",
+      "Parameters": {
+        "ClusterId.$": "$.clusterId",
+        "TerminationProtected": false
+      },
+      "ResultPath": null,
+      "Next": "Terminate EMR cluster"
+    },
+    "Terminate EMR cluster": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::elasticmapreduce:terminateCluster.sync",
+      "Parameters": {
+        "ClusterId.$": "$.clusterId"
+      },
+      "Next": "Wrap Up"
+    },
+    "Wrap Up": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}

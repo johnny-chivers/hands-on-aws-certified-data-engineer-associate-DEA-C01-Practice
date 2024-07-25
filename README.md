@@ -751,20 +751,199 @@ VACUUM FULL;
 
 # AWS EMR 
 
-## AWS Lambda 
+## Amazon EMR on Ec2
+EMR is a managed cluster platform that simplifies running big data frameworks such as Apache Hadoop and Apache Spark as well as Presto, Trino, Flink, HBase and more. EMR also integrates with several other AWS services simplifying big data processing such as the AWS Glue Data Catalog which can act as your metastore. 
 
-## AWS Data Pipeline 
+EMR architecture consists of a cluster which can be made up of three types of nodes. Although only a master node is required for EMR. Core nodes and Task nodes are optional.  i.e. A one node cluster consisting solely of a master node is possible. 
+
+![Alt text](images/emr-cluster.png)
+
+Master node: A node that manages the cluster by running software components to coordinate the distribution of data and tasks among other nodes
+
+Core node: A node with software components that run tasks and store data in the Hadoop Distributed File System (HDFS) on your cluster. Multi-node clusters have at least one core node.
+
+Task node: A node with software components that only runs tasks and does not store data in HDFS. Task nodes are optional.
+
+The Core nodes can be scaled up and down on demand to meet the required clustered capacity. The number of nodes for both Core and Task nodes can be increased/decreased via autoscaling to meet the cluster resource demand. 
+
+EMR clusters can be both transient and persistent. Transient clusters are spun up to carry out a specific data processing task and once completed the cluster is terminated. Long running, or persistent clusters, carry out multiple tasks and run for an extended period of time such as days or months. 
+
+Data Processing Frameworks are the engines used to process and analyse data. Different frameworks are available in EMR for different kinds of processing needs. The main frameworks used are Hadoop and Spark. 
+
+Cluster Resource Management is a resource management layer which is responsible for looking after resources and scheduling data for processing data. By default Amazon EMR uses YARN (Yet another Resource Negotiator). 
+
+In terms of storage EMR can use a Hadoop Distributed File System (HDFS) and by using EMR File System (EMRFS), Amazon EMR extends Hadoop to add the ability to directly access data stored on Amazon S3 as if it where a file system like HDFS. 
+
+Data can be encrypted both at rest and in transit with AWS Lakeformation or Apache Ranger can be used to control access to the data alongside IAM permissions. Network security can also be applied by NACLS and security groups. 
+
+## Amazon EMR Severless
+EMR Severless is a deployment option for EMR which provisions EMR in a severless environment. A user chooses a EMR release version and a runtime environment (Hive, Spark, Presto). EMR then manages the underlying environment with no need to provision EC2 instances. 
+
+The following diagram shows the EMR Serverless Application Life cycle. A user must terminate an application in order for billing to stop. 
+
+![Alt text](images/emr-serverless-application-states.png)
+
+## Amazon EMR on EKS
+This is a deployment option for EMR that allows a user to deploy EMR onto Elastic Kubernetes Service. With this deployment option EMR on EKS builds, configures, and manages containers for open-source applications.
+
+![Alt text](images/emr-on-eks-deployment.png)
+
+## Amazon EMR Tutorial 
+
+### Amazon EMR Tutorial Setup 
+The Cloudformation script located in the 4.emr-code directory will spin up the resources required for this tutorial. After the cloudformation script has been successfully executed the folders in S3 will be manually created before data and ETL scripts are uploaded to their respective locations. We will be using the S3 bucket created in the Step Up section at the start of this tutorial. 
+
+Below details the steps taken in the youtube video to set up the resouces for the Amazon EMR Tutorial. 
+
+1. Create Folder structure in S3 by adding `emr/input`, `emr/files`, `emr/output`, and `emr/logs`. The S3 folder structure will then look like the below. 
+```
+└── S3-Bucket-Name
+    ├── athena
+    ├── emr
+    │   ├── input 
+    │   ├── files
+    │   ├── output
+    │   └── logs
+    ├── processedData
+    ├── rawData
+    │   ├── customers 
+    │   │   └──  customers.csv 
+    │   ├── employees 
+    │   │   └──  employees.csv 
+    │   └── orders
+    │       └── orders.csv 
+    ├── scriptLocation    
+    └──  tmpDir
+```
+2. Upload `5.emr-code/tripData.csv` to input Folder 
+3. Upload `5.emr-code/hive/ny-taxi.hql` to files folder 
+4. Uplaod `5.emr-code/pig/ny-taxi.pig` to files folder
+5. Uplaod `5.emr-code/spark/ny-taxi.py` to files folder
+6. Create KeyPair and download private key 
+7. Create the EMR Cluster 
+    - Click Advance Options 
+    - Software Configuration: 
+      - Hadoop 
+      - JupyterHub 
+      - Hive 
+      - JupyterEnterpriseGateway 
+      - Hue 
+      - Spark 
+      - Livy 
+      - Pig 
+    - Select AWS Glue Data Catalog Settings 
+      - Use for Hive table metadata
+      - Use for Spark table metadata
+    - Set Log URI locations to `s3://<BUCKET_NAME>/emr/Logs/`
+    - Use the `EMR_DefaultRole` this will have all the required permissions. 
+    - Create Cluster with; 
+    - 1 Master Node
+      - Turn off High Availability
+    - 2 Core Nodes 
+    - 0 Task Nodes
+7. Allow SSH Traffic on Port 22 from myIp in EMR Security Group. 
+
+### Amazon EMR Spark Tutorial
+
+**Convert CSV to Parquet Using CLI**
+In this section we will convert the tripTax.csv to Parquet using the EMR ClI. 
+
+1. SSH into the EMR Cluster
+2. Create the spark-etl.py by copying the code from `5.emr-code/cli-spark/cli-spark-etl.py` into a nano text editor. 
+3. Run the comand 
+  ```
+    export PATH=$PATH:/etc/hadoop/conf:/etc/hive/conf:/usr/lib/hadoop-lzo/lib/:/usr/share/aws/aws-java-sdk/:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/:/usr/share/aws/emr/emrfs/auxlib/
+  ```
+4. Run the comand 
+  ```
+     export PATH=$PATH:spark.driver.extraClassPath/etc/hadoop/conf:/etc/hive/conf:/usr/lib/hadoop-lzo/lib/:/usr/share/aws/aws-java-sdk/:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/:/usr/share/aws/emr/emrfs/auxlib/
+  ```
+5. Update the S3 location and run the command 
+  ```
+  spark-submit spark-etl.py s3://<S3_BUCKET_NAME>/emr/input/ s3://<S3_BUCKET_NAME>/emr/output/spark/
+  ```
+6. Check output 
+7. delete output 
+
+**Convert CSV to Parquet Using EMR Steps**
+In this section we will convert the tripTax.csv to Parquet using the EMR Steps. 
+
+1. Add Step to CLuster via the EMR Console 
+2. Name step `custom jar`
+3. Jar location should be set as `command-runner.jar`
+4. Args should be set to this args which the `<bucketname>` repalced with your bucket name. 
+  ```
+      spark-submit s3://<bucketname>/emr/files/spark-etl.py s3://<bucketname>/emr/input s3://<bucketname>/emr/output
+  ```
+5. Once the step has completed look at the `output` in S3 folder for results. 
+6. Delete ouput
+
+### Amazon EMR Scheduling Using Step Functions Tutorial 
+In this section we will convert the tripTax.csv to Parquet using AWS Step Functions as an orchestration. 
+
+1. Naviagte to the AWS Step Functions service
+2. Create state machine 
+3. Select `write workflow in code`
+4. Copy the contents of the `5.emr-code/state-files/step-functions/sfn.json` file into the UI.  
+5. Click `Start Execution`
+6. Paste `5.emr-code/state-files/step-functions/args.json` into Input UI
+7. Update `ClusterID` with your cluster ID
+8. Update all `<S3_BUCKET_NAME>` with your S3 bucket name 
+9. Click `Start Execution`  
+
+### Amazon EMR Autoscaling Tutorial 
+In this section we will create a custom autoscaling policy and force our EMR cluster to scale. 
+
+1. Nagivate to the EMR Cluster
+2. Select the `Steps` tab
+3. Change `Concurrency` level from 1 to 5. 
+4. Select `Hardware` tab
+5. Select `Edit`on Cluster Scaling Policy 
+6. `Create a custom scaling policy`
+7. Edit autoscaling rules
+8. Minimum instances = 2
+9. Maximum instances = 5 
+10. Scale out should add node if `AppsRunnning` >= 2 for `1` five minute period Cooldown `60` seconds
+11. Scale in should remove node of `AppsRunning` < 2 for `1` five minute period Cooldown `60` seconds
+12. Click `Modify`
+13. Navigate to Step Functions
+14. Create state machine 
+15. Select `write workflow in code`
+16. Copy the contents of the `5.emr-code/state-files/auto-scaling/emr-sfn.json` file into the UI.  
+17. Click `Next`
+18. Name state machine and click `create` 
+19. Delete output location in S3 bucket 
+20. `start execution` on statemachine 
+21. Paste `5.emr-code/state-files/auto-scaling/emr-sfn-args.json` into Input UI
+22. Update `ClusterID` with your cluster ID
+23. Update all `<S3_BUCKET_NAME>` with your S3 bucket name 
+24. Click `Start Execution`  
+25. Check `Steps`, `Hardware`, and `Monitoring` tabs on the EMR cluster after 60 seconds
 
 ## Amazon Kinesis
 
 ## Amazon OpenSearch
 
+## Amazon Quicksight
+
+## Amazon DynamoDB 
+
 ## Containers 
 
+## AWS Lambda 
+
+## AWS Data Pipeline 
+
 ## Storage 
+- S3 
+- RDS
 
 ## Migration and Transfer 
 
 ## AWS SNS and SQS Appflow and Event bridge: Application integration 
 
 ## Amazon SageMaker For Data Analytics  
+
+## Amazon Ec2 
+
+## Amazon MSK
