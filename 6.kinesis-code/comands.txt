@@ -1,0 +1,14 @@
+PUT RECORDS
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '293' , 'firstname':'Catherine' ,'lastname': 'Abel' ,'fullname': 'Catherine Abel'}" --cli-binary-format raw-in-base64-out
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '295' , 'firstname':'Kim' ,'lastname': 'Abercrombie' ,'fullname': 'Kim Abercrombie'}" --cli-binary-format raw-in-base64-out
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '297' , 'firstname':'Humberto' ,'lastname': 'Acevedo' ,'fullname': 'Humberto Acevedo'}" --cli-binary-format raw-in-base64-out
+
+
+DESCRIBE `customers_stream` STREAM 
+aws kinesis describe-stream --stream-name customers_stream
+
+CONSUME DATA 
+aws kinesis get-shard-iterator --stream-name customers_stream --shard-id <shard-id> --shard-iterator-type TRIM_HORIZON
+
+GET DATA
+aws kinesis get-records --shard-iterator <>

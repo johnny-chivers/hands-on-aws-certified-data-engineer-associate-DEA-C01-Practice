@@ -920,7 +920,128 @@ In this section we will create a custom autoscaling policy and force our EMR clu
 24. Click `Start Execution`  
 25. Check `Steps`, `Hardware`, and `Monitoring` tabs on the EMR cluster after 60 seconds
 
-## Amazon Kinesis
+# Amazon Kinesis
+
+## Introduction to Kinesis
+Amazon Kinesis is a real time streaming solution which allows a user to ingest, buffer, and process data. It is fully managed, so there is no need to provision the underlying infrastructure. Amazon Kinesis is scalable and can handle any amount of streaming data, and process data from thousands of sources with very low latencies. Amazon Kinesis is available in three flavours; Amazon Kinesis Data Stream, Amazon Kinesis Firehose, and Amazon Managed Service for Apache Flink (Formally known as Kinesis Data Analytics). 
+
+## Kinesis Data Streams
+
+### Overview: Kinesis Data Streams 
+Amazon Kinesis Data Streams can be used to collect and process	streams of data records on real time. A Kinesis Data stream application can be created to read date records from a Kinesis data stream. These applications could run on EC2 instances and use the Kinesis Client Library. However, other AWS services can be used with Amazon Kinesis Data Streams to integrate with a stream in order to process data such as AWS lambda. 
+
+### Architecture: Kinesis Data Streams 
+The high level architecture of Kinesis Data Streams is laid out in the diagram below. Producers continually push data to the Kinesis Datastreams, and the consumers process the data in real time. Consumers process the data on real time and send it to downstream streams. 
+
+![Alt text](images/kinesis-data-streams-arch.png)
+
+### Kinesis Data Streams Terminology
+**Data Stream**: A Kinesis data stream is a set of shards. Each shard has a sequence of data records. Each data record has a sequence number that is assigned by Kinesis Data Streams.
+
+**Data Record**: A data record is the unit of data stored in a Kinesis data stream. Data records are composed of a sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
+
+**Partition Key**: A partition key is used to group data by shard within a stream. Kinesis Data Streams segregates the data records belonging to a stream into multiple shards. It uses the partition key that is associated with each data record to determine which shard a given data record belongs to. 
+
+**Sequence Number**: Each data record has a sequence number that is unique per partition-key within its shard. Kinesis Data Streams assigns the sequence number after you write to the stream with client.putRecords or client.putRecord.
+
+**Producers**: Producers put records into Amazon Kinesis Data Streams. For example, a web server sending log data to a stream is a producer.
+
+**Consumers**: Consumers get records from Amazon Kinesis Data Streams and process them. These consumers are known as Amazon Kinesis Data Streams Application.
+
+### Kinesis Client Library (KCL)
+The KCL takes care of many complex tasks associated with distributed processing and allows you to focus on the record processing logic. For example, the KCL can automatically load balance record processing across many instances, allow the user to checkpoint records that are already processed, and handle instance failures. The KCL acts as an intermediary between your record processing logic and Kinesis Data Streams. The KCL performs the following tasks:
+- Connects to the data stream
+- Enumerates the shards within the data stream
+- Uses leases to coordinate shard associations with its workers
+- Instantiates a record processor for every shard it manages
+- Pulls data records from the data stream
+- Pushes the records to the corresponding record processor
+- Checkpoints processed records
+- Balances shard-worker associations (leases) when the worker instance count changes or when the data stream is resharded (shards are split or merged)
+
+### Amazon Kinesis Data Streams SDK
+The Amazon Kinesis Data Streams SDK is a set of libraries and tools that allow developers to build applications that work with Amazon Kinesis Data Streams. The Kinesis Data Streams SDK is available in multiple programming languages, including Java, Python, Node.js, .NET, and Go, allowing developers to work with the SDK in their preferred language.The SDK provides APIs and utilities to perform common Kinesis Data Streams operations, such as:
+- Creating and managing Kinesis data streams
+- Putting data records into a Kinesis data stream
+- Consuming data records from a Kinesis data stream
+- Checkpointing and managing the state of a Kinesis data stream consumer
+
+The SDK abstracts away the low-level details of interacting with the Kinesis Data Streams service, allowing developers to focus on building their application logic.The SDK also provides features like automatic retries, backoff, and error handling to make it easier to build robust Kinesis-based applications.Developers can use the SDK to build a wide range of applications that process real-time streaming data, such as log analytics, clickstream processing, and IoT data ingestion.
+
+### Amazon Kinesis Producer Library (KPL)
+The Kinesis Producer Library (KPL) is a library provided by AWS to help producers (applications that send data) efficiently write data to Amazon Kinesis Data Streams.The KPL is written in C++ and runs as a child process to the main user process. Precompiled 64-bit native binaries are bundled with the Java release and are managed by the Java wrapper.The KPL provides features like automatic batching, retries, and error handling to make it easier for producers to write data to Kinesis Data Streams.The KPL integrates seamlessly with the Kinesis Client Library (KCL), allowing the consumer-side application to automatically extract individual user records from the aggregated Kinesis records.To use the KPL to put data records into a Kinesis data stream, you need:
+- A running Amazon EC2 Linux instance
+- An IAM role attached to the instance with the KinesisFullAccess policy
+
+### Amazon Kinesis Data Streams SDK Vs KPL
+| SDK  | KPL |
+| ----------- | ----------- |
+|  The SDK can call the 'PutRecord' and 'PutRecords' api |   The KPL can rite to one or more Kinesis Data Streams with automatic and configurable retries  |
+|  PutRecord operation allows a single data record within an API call | Collects records and utilizes PutRecords API to write multiple records to multiple shards per request. |
+|  PutRecords operation allows multiple data records within an API call up to 500 records. | Aggregate records to increase payload size and throughput. |
+|  Each record in the request can be as large as 1 MiB, up to a limit of 5 MiB | Only available in Java  |
+
+### Kinesis Data Streams Enhanced Fanout 
+Kinesis Enhanced Fan-Out is a feature in Amazon Kinesis Data Streams that provides dedicated throughput for consumers to read data from a Kinesis stream. With standard Kinesis consumers, the 2 MB/s of throughput per shard is shared among all the consumers reading from that shard. This can lead to increased latency as more consumers are added. Enhanced Fan-Out provides a dedicated 2 MB/s of throughput per shard per consumer, up to 20 consumers per shard. This ensures that each consumer gets its own isolated pipe of data, improving performance and reducing latency. Enhanced Fan-Out uses an HTTP/2 based SubscribeToShard API to deliver data to consumers, which improves data delivery speed by over 65% compared to the standard GetRecords API. Customers no longer need to fan-out their data to multiple Kinesis streams to support their desired read throughput for downstream applications. Enhanced Fan-Out handles this automatically. Customers are charged for Enhanced Fan-Out based on the amount of data retrieved using this feature and the number of consumers registered per shard.
+
+![Alt text](images/kinesis-enhanced-fanout.png)
+
+## Amazon Kinesis Firehose
+Amazon Kinesis Data Firehose is the easiest way to load streaming data into data stores and analytics tools. It can capture, transform, and load streaming data into Amazon S3, Amazon Redshift, Amazon Elasticsearch Service, and Splunk, enabling near real-time analytics with existing business intelligence tools and dashboards you’re already using today. It is a fully managed service that automatically scales to match the throughput of your data and requires no ongoing administration. It can also batch, compress, and encrypt the data before loading it, minimising the amount of storage used at the destination and increasing security.
+
+## Amazon Managed Service For Apache Flink 
+Amazon Managed Service for Apache Flink is a fully managed service provided by AWS that allows you to process and analyze streaming data using popular programming languages like Java, Python, SQL, or Scala. It enables a user to quickly author and run code against streaming sources to perform time-series analytics, feed real-time dashboards, and create real-time metrics. The service handles the underlying infrastructure for your Apache Flink applications, including provisioning compute resources, ensuring high availability and fault tolerance, automatic scaling, and application backups. You can use the high-level Flink programming features like operators, functions, sources, and sinks in the same way as when hosting the Flink infrastructure yourself. The service provides an exactly-once delivery model for your Flink applications if they are built using idempotent operators, sources, and sinks. This ensures that the processed data impacts downstream results only once. You can access resources behind an Amazon VPC with your Managed Flink applications by configuring the VPC access as described in the Amazon Kinesis Data Analytics Developer Guide.
+
+## Amazon Kinesis Tutorial 
+
+### Kinesis Data Streams Tutorial 
+
+1. Navigate to the Kinesis Service on the AWS Console. 
+2. Create a Kinesis Data Stream called `customers_stream`
+3. Open AWS Cloudshell 
+4. Put a customer dat record onto the stream as consumer 
+```
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '293' , 'firstname':'Catherine' ,'lastname': 'Abel' ,'fullname': 'Catherine Abel'}" --cli-binary-format raw-in-base64-out
+```
+```
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '295' , 'firstname':'Kim' ,'lastname': 'Abercrombie' ,'fullname': 'Kim Abercrombie'}" --cli-binary-format raw-in-base64-out
+```
+```
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '297' , 'firstname':'Humberto' ,'lastname': 'Acevedo' ,'fullname': 'Humberto Acevedo'}" --cli-binary-format raw-in-base64-out
+```
+5. Describe the `customers_stream` stream 
+```
+aws kinesis describe-stream --stream-name customers_stream
+```
+6. Consume data record from the stream. NB if using KCL there is no need to specify the shard-id. The library handles this for you. 
+```
+aws kinesis get-shard-iterator --stream-name customers_stream --shard-id <shard-id> --shard-iterator-type TRIM_HORIZON
+```
+7. Get data using returned shard-iterator
+```
+aws kinesis get-records --shard-iterator <>
+```
+8. Decode the `Data` using a base64 decoder
+
+### Kinesis Firehose Tutorial 
+1. Create S3 output location for firehose stream 
+2. Create Kiensis Firehose Stream with the Kinesis `custoners_stream` as the source 
+3. Select the S3 bucket for the output location 
+4. Enter a s3 bucket prefix for the data outout 
+5. Create the kinesis Firehose Stream 
+6. Add data to the `customers_stream`
+```
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '293' , 'firstname':'Catherine' ,'lastname': 'Abel' ,'fullname': 'Catherine Abel'}" --cli-binary-format raw-in-base64-out
+```
+```
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '295' , 'firstname':'Kim' ,'lastname': 'Abercrombie' ,'fullname': 'Kim Abercrombie'}" --cli-binary-format raw-in-base64-out
+```
+```
+aws kinesis put-record --stream-name customers_stream --partition-key customer --data "{'customerid': '297' , 'firstname':'Humberto' ,'lastname': 'Acevedo' ,'fullname': 'Humberto Acevedo'}" --cli-binary-format raw-in-base64-out
+```
+7. Wait for a few minutes and check the contents of the S3 bucket for the output 
+
+## Amazon MSK
 
 ## Amazon OpenSearch
 
@@ -936,7 +1057,7 @@ In this section we will create a custom autoscaling policy and force our EMR clu
 
 ## Storage 
 - S3 
-- RDS
+- RDS/Aurora 
 
 ## Migration and Transfer 
 
@@ -945,5 +1066,3 @@ In this section we will create a custom autoscaling policy and force our EMR clu
 ## Amazon SageMaker For Data Analytics  
 
 ## Amazon Ec2 
-
-## Amazon MSK

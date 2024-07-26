@@ -3,33 +3,33 @@
     "sparkArgs": [
         [
             "spark-submit",
-            "s3://<S3_BUCKET_NAME>/files/spark-etl.py",
-            "s3://<S3_BUCKET_NAME>/input",
-            "s3://<S3_BUCKET_NAME>/output/spark1"
+            "s3://<S3_BUCKET_NAME>/emr/files/spark-etl.py",
+            "s3://<S3_BUCKET_NAME>/emr/input",
+            "s3://<S3_BUCKET_NAME>/emr/output/spark1"
         ],
         [
             "spark-submit",
-            "s3://<S3_BUCKET_NAME>/files/spark-etl.py",
-            "s3://<S3_BUCKET_NAME>/input",
-            "s3://<S3_BUCKET_NAME>/output/spark2"
+            "s3://<S3_BUCKET_NAME>/emr/files/spark-etl.py",
+            "s3://<S3_BUCKET_NAME>/emr/input",
+            "s3://<S3_BUCKET_NAME>/emr/output/spark2"
         ],
         [
             "spark-submit",
-            "s3://<S3_BUCKET_NAME>/files/spark-etl.py",
-            "s3://<S3_BUCKET_NAME>/input",
-            "s3://<S3_BUCKET_NAME>/output/spark3"
+            "s3://<S3_BUCKET_NAME>/emr/files/spark-etl.py",
+            "s3://<S3_BUCKET_NAME>/emr/input",
+            "s3://<S3_BUCKET_NAME>/emr/output/spark3"
         ],
         [
             "spark-submit",
-            "s3://<S3_BUCKET_NAME>/files/spark-etl.py",
-            "s3://<S3_BUCKET_NAME>/input",
-            "s3://<S3_BUCKET_NAME>/output/spark4"
+            "s3://<S3_BUCKET_NAME>/emr/files/spark-etl.py",
+            "s3://<S3_BUCKET_NAME>/emr/input",
+            "s3://<S3_BUCKET_NAME>/emr/output/spark4"
         ],
         [
             "spark-submit",
-            "s3://<S3_BUCKET_NAME>/files/spark-etl.py",
-            "s3://<S3_BUCKET_NAME>/input",
-            "s3://<S3_BUCKET_NAME>/output/spark5"
+            "s3://<S3_BUCKET_NAME>/emr/files/spark-etl.py",
+            "s3://<S3_BUCKET_NAME>/emr/input",
+            "s3://<S3_BUCKET_NAME>/emr/output/spark5"
         ]
     ],
     "hiveArgs": [
@@ -38,55 +38,55 @@
             "--run-hive-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.hql",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.hql",
             "-d",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-d",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/hive1"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/hive1"
         ],
         [
             "hive-script",
             "--run-hive-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.hql",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.hql",
             "-d",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-d",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/hive2"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/hive2"
         ],
         [
             "hive-script",
             "--run-hive-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.hql",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.hql",
             "-d",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-d",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/hive3"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/hive3"
         ],
         [
             "hive-script",
             "--run-hive-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.hql",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.hql",
             "-d",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-d",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/hive4"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/hive4"
         ],
         [
             "hive-script",
             "--run-hive-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.hql",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.hql",
             "-d",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-d",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/hive5"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/hive5"
         ]
     ],
     "pigArgs": [
@@ -95,55 +95,55 @@
             "--run-pig-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.pig",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.pig",
             "-p",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-p",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/pig1"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/pig1"
         ],
         [
             "pig-script",
             "--run-pig-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.pig",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.pig",
             "-p",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-p",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/pig2"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/pig2"
         ],
         [
             "pig-script",
             "--run-pig-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.pig",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.pig",
             "-p",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-p",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/pig3"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/pig3"
         ],
         [
             "pig-script",
             "--run-pig-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.pig",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.pig",
             "-p",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-p",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/pig4"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/pig4"
         ],
         [
             "pig-script",
             "--run-pig-script",
             "--args",
             "-f",
-            "s3://<S3_BUCKET_NAME>/files/ny-taxi.pig",
+            "s3://<S3_BUCKET_NAME>/emr/files/ny-taxi.pig",
             "-p",
-            "INPUT=s3://<S3_BUCKET_NAME>/input/",
+            "INPUT=s3://<S3_BUCKET_NAME>/emr/input/",
             "-p",
-            "OUTPUT=s3://<S3_BUCKET_NAME>/output/pig5"
+            "OUTPUT=s3://<S3_BUCKET_NAME>/emr/output/pig5"
         ]
     ],
     "deleteCluster": false
