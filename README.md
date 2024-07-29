@@ -1041,17 +1041,143 @@ aws kinesis put-record --stream-name customers_stream --partition-key customer -
 ```
 7. Wait for a few minutes and check the contents of the S3 bucket for the output 
 
-## Amazon MSK
+# Amazon MSK (Managed Streaming for Apache Kafka) 
+
+## Introduction to MSK 
+Amazon MSK (Managed Streaming for Apache Kafka) and Amazon Kinesis are both services offered by AWS for real-time data streaming, but they are designed to address different use cases and come with distinct features and operational models. Amazon MSK manages the Apache Kafka infrastructure and operations, allowing you to focus on building your streaming applications without worrying about the underlying Kafka cluster management .It provides the control-plane operations for creating, updating, and deleting Kafka clusters, while allowing you to use the standard Apache Kafka data-plane operations for producing and consuming data. Amazon MSK runs open-source versions of Apache Kafka, which means your existing applications, tooling, and plugins from the Apache Kafka community are supported without requiring changes to your application code. Compared to self-managing an Apache Kafka cluster, Amazon MSK provides benefits like automatic scaling, high availability, security features, and integration with other AWS services.
+
+## MSK Architecture
+To Spin up a MSK cluster you must have a Virtual Private Cloud (VPC) and subnets set up within that VPC. MSK can be configured to run in either two, or three, subnets with each subnet located in different Availability Zones (AZs). When a cluster is created broker nodes are distributed evenly across the subnets. The brokers in a MSK cluster are made accessible to clients in the customer VPC through Elastic Network Interfaces (ENIs). Traffic between the clients in the Customer VPC and the brokers in the AWS managed VPC is private by default and does not travel across the public internet. Control Plane operations such as cluster creation are provided by Amazon MSK.
+
+![Alt text](images/msk-architecture.png)
+
+## Amazon MSK Vs Amazon Kinesis 
+Amazon MSK manages the Apache Kafka infrastructure and operations, allowing you to focus on building your streaming applications without worrying about the underlying Kafka cluster management.It provides the control-plane operations for creating, updating, and deleting Kafka clusters, while allowing you to use the standard Apache Kafka data-plane operations for producing and consuming data.
+
+Amazon MSK runs open-source versions of Apache Kafka, which means your existing applications, tooling, and plugins from the Apache Kafka community are supported without requiring changes to your application code.Compared to self-managing an Apache Kafka cluster, Amazon MSK provides benefits like automatic scaling, high availability, security features, and integration with other AWS services.
+
+When choosing between Amazon Kinesis Data Streams and Amazon MSK, key factors to consider are your familiarity with the technologies, preference for open-source, and the specific requirements of your use case. AWS recommends working backward from your use case to determine the best service.
+
+## MSK tutorial 
+In this tutorial we will create an Amazon MSK cluster on our VPC. We will then spin up and EC2 instance to act as a clinet to produce and consumer messages from a Kafka Topic. 
+
+1. Navigate to the Amazon MSK service 
+2. Click `Create Cluster`
+3. Create a `Custom Cluster` 
+4. Slect a t3.small instance type for the brokers
+5. 100GiB storage volume
+6. Select 2 AZ zones 
+7. Select VPC 
+8. Select Zones and Subnets 
+9. Create a new security group for the cluster
+10. Remove default Security Group 
+11. Turn on plain text traffic 
+12. Review and Create cluster 
+13. Navigate to the Ec2 service
+14. Create an EC2 instance
+15. Name the instance 
+16. Create a new Key pair
+17. Configure networking 
+18. Select the same VPC as the MSK cluster
+19. Create a new Security Group 
+20. And launch the instance 
+21. Open the Security group in the MSK cluster to allow traffic from the EC2 instance SG group 
+22. Create an IAM role for the EC2 instance which allows it to connect to the MSK cluster with the following policy 
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:Connect",
+                "kafka-cluster:AlterCluster",
+                "kafka-cluster:DescribeCluster"
+            ],
+            "Resource": [
+                "arn:aws:kafka:region:Account-ID:cluster/MSKTutorialCluster/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:*Topic*",
+                "kafka-cluster:WriteData",
+                "kafka-cluster:ReadData"
+            ],
+            "Resource": [
+                "arn:aws:kafka:region:Account-ID:topic/MSKTutorialCluster/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:AlterGroup",
+                "kafka-cluster:DescribeGroup"
+            ],
+            "Resource": [
+                "arn:aws:kafka:region:Account-ID:group/MSKTutorialCluster/*"
+            ]
+        }
+    ]
+}
+```
+23. SSH into the EC2 instance 
+24. Install Java 
+```
+sudo yum -y install java-11
+```
+25. Download Apache Kakfa 
+```
+sudo yum -y install java-11
+```
+26. Run the following comand in the directory where Kafka was downloaded to 
+```
+tar -xzf kafka_2.13-{YOUR MSK VERSION}.tgz
+```
+27. Navigate to the to the `kafka_2.13-{YOUR MSK VERSION}/libs` directory and run 
+```
+wget https://github.com/aws/aws-msk-iam-auth/releases/download/v1.1.1/aws-msk-iam-auth-1.1.1-all.jar
+```
+28. Navigate to the `kafka_2.13-{YOUR MSK VERSION}/bin` directory and create a new file `client.properties` with the following contents
+```
+security.protocol=SASL_SSL
+sasl.mechanism=AWS_MSK_IAM
+sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+```
+29. Run the follwing comand 
+```
+<path-to-your-kafka-installation>/bin/kafka-topics.sh --create --bootstrap-server BootstrapServerString --command-config client.properties --replication-factor 3 --partitions 1 --topic MSKTutorialTopic
+```
+30. `Created topic MSKTutorialTopic` should be returned 
+31. Run the following command to send a message. Enter any text. 
+```
+<path-to-your-kafka-installation>/bin/kafka-console-producer.sh --broker-list BootstrapServerString --producer.config client.properties --topic MSKTutorialTopic
+```
+32. Open a new connection window
+33. Run the following command to consume a message 
+```
+<path-to-your-kafka-installation>/bin/kafka-console-producer.sh --broker-list BootstrapServerString --producer.config client.properties --topic MSKTutorialTopic
+```
+
+
+
 
 ## Amazon OpenSearch
 
+
+
 ## Amazon Quicksight
+
 
 ## Amazon DynamoDB 
 
-## Containers 
+- Use the CLi for the Demo on Cloudshell
 
 ## AWS Lambda 
+
+## Containers 
 
 ## AWS Data Pipeline 
 
