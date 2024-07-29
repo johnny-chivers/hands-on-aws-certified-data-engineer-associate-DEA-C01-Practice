@@ -1131,40 +1131,41 @@ sudo yum -y install java-11
 ```
 sudo yum -y install java-11
 ```
-26. Run the following comand in the directory where Kafka was downloaded to 
+26. Download kafka 
+```
+wget https://archive.apache.org/dist/kafka/{YOUR MSK VERSION}/kafka_2.13-{YOUR MSK VERSION}.tgz
+```
+27. Run the following comand in the directory where Kafka was downloaded to 
 ```
 tar -xzf kafka_2.13-{YOUR MSK VERSION}.tgz
 ```
-27. Navigate to the to the `kafka_2.13-{YOUR MSK VERSION}/libs` directory and run 
+28. Navigate to the to the `kafka_2.13-{YOUR MSK VERSION}/libs` directory and run 
 ```
 wget https://github.com/aws/aws-msk-iam-auth/releases/download/v1.1.1/aws-msk-iam-auth-1.1.1-all.jar
 ```
-28. Navigate to the `kafka_2.13-{YOUR MSK VERSION}/bin` directory and create a new file `client.properties` with the following contents
+29. Navigate to the `kafka_2.13-{YOUR MSK VERSION}/bin` directory and create a new file `client.properties` with the following contents
 ```
 security.protocol=SASL_SSL
 sasl.mechanism=AWS_MSK_IAM
 sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
 sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
 ```
-29. Run the follwing comand 
+30. Run the follwing comand 
 ```
 <path-to-your-kafka-installation>/bin/kafka-topics.sh --create --bootstrap-server BootstrapServerString --command-config client.properties --replication-factor 3 --partitions 1 --topic MSKTutorialTopic
 ```
-30. `Created topic MSKTutorialTopic` should be returned 
-31. Run the following command to send a message. Enter any text. 
+31. `Created topic MSKTutorialTopic` should be returned 
+32. Run the following command to send a message. Enter any text. 
 ```
 <path-to-your-kafka-installation>/bin/kafka-console-producer.sh --broker-list BootstrapServerString --producer.config client.properties --topic MSKTutorialTopic
 ```
-32. Open a new connection window
-33. Run the following command to consume a message 
+33. Open a new connection window
+34. Run the following command to consume a message 
 ```
 <path-to-your-kafka-installation>/bin/kafka-console-producer.sh --broker-list BootstrapServerString --producer.config client.properties --topic MSKTutorialTopic
 ```
 
-
-
-
-## Amazon OpenSearch
+# Amazon OpenSearch
 
 
 
