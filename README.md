@@ -1179,7 +1179,7 @@ curl -XPUT -u 'master-user:master-user-password' 'domain-endpoint/movies/_doc/1'
 ```
 9. Naviagte on your local machine to the JSON file bulk_movies.json. Run this comand to upload a single document using the API. Replace user/password/domain. 
 ```
-curl -XPUT -u 'master-user:master-user-password' 'domain-endpoint/movies/_doc/1' -d '{"director": "Burton, Tim", "genre": ["Comedy","Sci-Fi"], "year": 1996, "actor": ["Jack Nicholson","Pierce Brosnan","Sarah Jessica Parker"], "title": "Mars Attacks!"}' -H 'Content-Type: application/json'
+curl -XPOST -u 'master-user:master-user-password' 'domain-endpoint/_bulk' --data-binary @bulk_movies.json -H 'Content-Type: application/json'
 ```
 10. Search for a document using this API. Replace user/password/domain.
 ```
