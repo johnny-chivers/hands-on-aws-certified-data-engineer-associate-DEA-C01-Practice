@@ -1,11 +1,14 @@
-# Hands On AWS Certified Data Engineer - Associate (DEA-C01) Practice 
-
-# Contents 
+# Hands On AWS Certified Data Engineer - Associate (DEA-C01) Full Course 
 
 # Disclaimer 
-This course, youtube video, revison/exam guide, and/or slide deck for the AWS Certified Data Engineer certification is intended as a supplementary resource to aid in your preparation for the certification exam. While it is designed to help you identify and address knowledge gaps, it does not guarantee a passing score. Success on the exam depends on your understanding of the material, practical experience, and familiarity with AWS services and best practices. We recommend using this guide alongside other study materials and hands-on practice to enhance your readiness for the certification exam.
+This course, youtube video, revision/exam guide, and/or slide deck for the AWS Certified Data Engineer certification is intended as a supplementary resource to aid in your preparation for the certification exam. While it is designed to help you identify and address knowledge gaps, it does not guarantee a passing score. Success on the exam depends on your understanding of the material, practical experience, and familiarity with AWS services and best practices. We recommend using this guide alongside other study materials and hands-on practice to enhance your readiness for the certification exam.
 
 # Introduction 
+
+This github contains the code for the [youtube video](https://youtu.be/6G0bLDIcO7Y). The youtube video acts as a revision aid for the AWS Certified Data Engineer - Associate (DEA-C01) certfication exam. The repo contains the code alongside a detailed README that gives definitions of teh AWS services and other areas of knowledge required for the certification. 
+
+[AWS Data Engineer - Associate DEA-C01 Revision Guide](https://buymeacoffee.com/johnnychivers/e/296836)
+[Udemy Pratice Exams](https://www.udemy.com/course/practice-exams-aws-certified-data-engineer-associate-johnny-chivers/?referralCode=B90E92C8A12AFA2E45C7)
 
 # Setup
 
@@ -1594,3 +1597,18 @@ Amazon EventBridge is a serverless event busthat facilitates event-driven archit
 # Amazon SageMaker For Data Engineering 
 
 Amazon SageMaker is a fully managed machine learning (ML) service provided by AWS that simplifies the process of building, training, and deploying machine learning models. While SageMaker is primarily known for its capabilities in ML model development, it also offers several features and tools that are valuable for data engineering tasks. Including Amazon SageMaker Data Wrangler and Amazon SageMaker Pipelines. 
+
+# Creators
+
+**Johnny Chivers**
+
+- <https://github.com/johnny-chivers/>
+
+# Useful Links
+
+- [youtube video](https://youtu.be/iGvj1gjbwl0) 
+- [website](https://www.johnnychivers.co.uk)
+- [buy me a coffee](https://www.buymeacoffee.com/johnnychivers)
+
+
+Enjoy :metal:
