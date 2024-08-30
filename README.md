@@ -8,6 +8,7 @@ This course, youtube video, revision/exam guide, and/or slide deck for the AWS C
 This github contains the code for the [youtube video](https://youtu.be/6G0bLDIcO7Y). The youtube video acts as a revision aid for the AWS Certified Data Engineer - Associate (DEA-C01) certfication exam. The repo contains the code alongside a detailed README that gives definitions of teh AWS services and other areas of knowledge required for the certification. 
 
 [AWS Data Engineer - Associate DEA-C01 Revision Guide](https://buymeacoffee.com/johnnychivers/e/296836)
+
 [Udemy Pratice Exams](https://www.udemy.com/course/practice-exams-aws-certified-data-engineer-associate-johnny-chivers/?referralCode=B90E92C8A12AFA2E45C7)
 
 # Setup
