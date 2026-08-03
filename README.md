@@ -274,7 +274,7 @@ CREATE DATABASE demo_data;
 ```
 CREATE EXTERNAL TABLE IF NOT EXISTS customers(
   customerid BIGINT, 
-  fistname STRING,
+  firstname STRING,
   lastname STRING,
   fullname STRING
   )
